@@ -1,15 +1,15 @@
-package algorithms.astar;
+package src.algorithms;
 
 import java.util.*;
 
-public class Astar {
+public class Gbfs {
   public List<String> algorithms(String initial, String goal, Map<String, Set<String>> wordLadder) {
     long startTime = System.currentTimeMillis();
     Runtime runtime = Runtime.getRuntime();
     long usedMemoryBefore = runtime.totalMemory() - runtime.freeMemory();
 
     Set<String> visited = new HashSet<>();
-    PriorityQueue<Node> queue = new PriorityQueue<>(Comparator.comparingInt(Node::getTotalCost));
+    PriorityQueue<Node> queue = new PriorityQueue<>(Comparator.comparingInt(Node::getHCost));
     Map<String, Node> nodes = new HashMap<>();
     Node startNode = new Node(initial, 0, countHeuristic(initial, goal));
     nodes.put(initial, startNode);
@@ -26,14 +26,10 @@ public class Astar {
         for (String connection : connections) {
           if (!visited.contains(connection)) {
             Node nextNode = nodes.getOrDefault(connection, new Node(connection));
+            nextNode.parent = current;  // Set the parent of the node
+            nextNode.hCost = countHeuristic(connection, goal);
             nodes.put(connection, nextNode);
-            int newCost = current.gCost + 1;
-            if (newCost < nextNode.gCost) {
-              nextNode.gCost = newCost;
-              nextNode.hCost = countHeuristic(connection, goal);
-              nextNode.parent = current;
-              queue.add(nextNode);
-            }
+            queue.add(nextNode);
           }
         }
       }
@@ -44,8 +40,8 @@ public class Astar {
       path.addFirst(node.word);
     }
 
-    printPerformanceMetrics(startTime, runtime, usedMemoryBefore);
-    return path.isEmpty() || !path.getFirst().equals(initial) ? Collections.emptyList() : path;
+    printPerformanceMetrics(startTime, runtime, usedMemoryBefore, visited.size());
+    return path;
   }
 
   private int countHeuristic(String current, String goal) {
@@ -58,36 +54,12 @@ public class Astar {
     return count;
   }
 
-  private void printPerformanceMetrics(long startTime, Runtime runtime, long usedMemoryBefore) {
+  private void printPerformanceMetrics(long startTime, Runtime runtime, long usedMemoryBefore, int visitedSize) {
     long stopTime = System.currentTimeMillis();
     long elapsedTime = stopTime - startTime;
     long usedMemoryAfter = runtime.totalMemory() - runtime.freeMemory();
     System.out.println("\nExecution time: " + elapsedTime + " milliseconds");
     System.out.println("Memory used: " + (usedMemoryAfter - usedMemoryBefore) + " bytes");
-  }
-
-  private static class Node {
-    String word;
-    int gCost;
-    int hCost;
-    Node parent;
-
-    Node(String word) {
-      this.word = word;
-      this.gCost = Integer.MAX_VALUE;
-      this.hCost = 0;
-      this.parent = null;
-    }
-
-    Node(String word, int gCost, int hCost) {
-      this.word = word;
-      this.gCost = gCost;
-      this.hCost = hCost;
-      this.parent = null;
-    }
-
-    int getTotalCost() {
-      return gCost + hCost;
-    }
+    System.out.println("Number of visited nodes: " + visitedSize);
   }
 }

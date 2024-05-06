@@ -1,15 +1,16 @@
+package src;
 import java.io.*;
 import java.util.*;
 
-import algorithms.ucs.Ucs;
-import algorithms.gbfs.Gbfs;
-import algorithms.astar.Astar;
-import dict.WordDictionaryParser;
+import src.algorithms.Astar;
+import src.algorithms.Gbfs;
+import src.algorithms.Ucs;
+import src.dict.WordDictionaryParser;
 
 public class Main {
   @SuppressWarnings("unchecked")
   public static void main(String[] args) {
-    String dictionaryFilePath = "./dict/dictionary.txt";
+    String dictionaryFilePath = "./src/dict/dictionary.txt";
 
     Set<String> wordDictionary = WordDictionaryParser.parseDictionary(dictionaryFilePath);
     File graphFile = new File("./bin/data/word_ladder.ser");
@@ -79,20 +80,17 @@ public class Main {
           case 1:
             Ucs ucs = new Ucs();
             result = ucs.algorithms(initial, goal, wordLadder);
-            System.out.println("Path: " + result + "\n");
-            System.out.println("Number of steps: " + (result.size() -1) + "\n");
+            printResult(result);
             break;
           case 2:
             Gbfs gbfs = new Gbfs();
             result = gbfs.algorithms(initial, goal, wordLadder);
-            System.out.println("Path: " + result + "\n");
-            System.out.println("Number of steps: " + (result.size() -1) + "\n");
+            printResult(result);
             break;
           case 3:
             Astar astar = new Astar();
             result = astar.algorithms(initial, goal, wordLadder);
-            System.out.println("Path: " + result + "\n");
-            System.out.println("Number of steps: " + (result.size() -1) + "\n");
+            printResult(result);
             break;
         }
       } catch (InputMismatchException e) {
@@ -104,6 +102,16 @@ public class Main {
         scanner.nextLine();
         continue;
       }
+    }
+  }
+
+  public static void printResult(List<String> result) {
+    if (result.size() <= 1){
+      System.out.println("\nNo path found!\n");
+    }
+    else{
+      System.out.println("Path: " + result + "\n");
+      System.out.println("Number of steps: " + (result.size() -1) + "\n");
     }
   }
 }

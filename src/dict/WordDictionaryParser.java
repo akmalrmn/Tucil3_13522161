@@ -1,4 +1,4 @@
-package dict;
+package src.dict;
 
 import java.io.*;
 import java.util.*;

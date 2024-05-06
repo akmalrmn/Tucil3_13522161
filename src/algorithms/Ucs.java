@@ -1,4 +1,4 @@
-package algorithms.ucs;
+package src.algorithms;
 
 import java.util.*;
 
@@ -9,9 +9,9 @@ public class Ucs {
         long usedMemoryBefore = runtime.totalMemory() - runtime.freeMemory(); // Memory used before execution
 
         Set<String> visited = new HashSet<>();
-        PriorityQueue<Node> queue = new PriorityQueue<>(Comparator.comparingInt(Node::getCost));
+        PriorityQueue<Node> queue = new PriorityQueue<>(Comparator.comparingInt(Node::getGCost));
         Map<String, Node> nodes = new HashMap<>();
-        Node startNode = new Node(initial, 0);
+        Node startNode = new Node(initial, 0, 0);
         nodes.put(initial, startNode);
         queue.add(startNode);
 
@@ -43,38 +43,17 @@ public class Ucs {
             path.addFirst(node.word);
         }
 
-        printPerformanceMetrics(startTime, runtime, usedMemoryBefore);
+        printPerformanceMetrics(startTime, runtime, usedMemoryBefore, visited.size());
 
         return path;
     }
 
-    private void printPerformanceMetrics(long startTime, Runtime runtime, long usedMemoryBefore) {
+    private void printPerformanceMetrics(long startTime, Runtime runtime, long usedMemoryBefore, int visitedSize) {
         long stopTime = System.currentTimeMillis();
         long elapsedTime = stopTime - startTime;
         long usedMemoryAfter = runtime.totalMemory() - runtime.freeMemory();
         System.out.println("\nExecution time: " + elapsedTime + " milliseconds");
         System.out.println("Memory used: " + (usedMemoryAfter - usedMemoryBefore) + " bytes");
-    }
-
-    private static class Node {
-        String word;
-        int gCost;
-        Node parent;
-
-        Node(String word) {
-            this.word = word;
-            this.gCost = Integer.MAX_VALUE;
-            this.parent = null;
-        }
-
-        Node(String word, int gCost) {
-            this.word = word;
-            this.gCost = gCost;
-            this.parent = null;
-        }
-
-        int getCost() {
-            return gCost;
-        }
+        System.out.println("Number of visited nodes: " + visitedSize);
     }
 }
